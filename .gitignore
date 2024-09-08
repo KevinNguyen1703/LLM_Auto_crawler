@@ -1,3 +1,9 @@
-./vnexpress*
-./*.htm
-./*.html
+# Ignore all folders that start with 'vnexpress'
+vnexpress*/
+
+# Ignore all HTML files
+*.html
+*.htm
+
+# Ignore all text files
+*.txt
