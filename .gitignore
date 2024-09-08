@@ -1,6 +1,6 @@
 # Ignore all folders that start with 'vnexpress'
 vnexpress*/
-
+tuoitre*/
 # Ignore all HTML files
 *.html
 *.htm
