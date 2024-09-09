@@ -7,3 +7,5 @@ tuoitre*/
 
 # Ignore all text files
 *.txt
+
+.DS_Store
