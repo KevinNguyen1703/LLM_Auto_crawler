@@ -17,9 +17,8 @@ def scrape_latest_articles():
     if not os.path.exists('tuoitre_articles'):
         os.makedirs('tuoitre_articles')
             
-    # Assuming each article block is within a div or similar element without specific article tags
     for article in soup.find_all('div',class_= 'box-category-item'):
-        time_tag = article.find('span', class_ = 'time-ago-last-news')  # Adjust as necessary
+        time_tag = article.find('span', class_ = 'time-ago-last-news')
         article_time = time_tag.get('title')
         if article_time and is_recent_article(article_time):
             link = article.find('a', class_ = 'box-category-link-with-avatar', href=True)['href']

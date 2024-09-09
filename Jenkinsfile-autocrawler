@@ -1,0 +1,42 @@
+pipeline {
+    agent any
+    parameters {
+        choice(name: 'component', choices: ['tuoitre', 'vnexpress'], description: 'Nguồn báo cần crawl')
+        string(name: 'output_dir', defaultValue: '/Users/gumiho/Gumiho/project/crawl-house-price/auto_crawler', description: 'Directory to store the output files')
+    }
+    stages {
+        stage('Build') {
+            steps {
+                echo "Cào trang web từ nguồn: ${params.component}"
+                // Simulate the build process (replace with your actual build commands)
+                sh """
+                   python fetch_${component}.py
+                """
+            }
+        }
+        stage('Save Output') {
+            steps {
+                echo "Saving output to: ${params.output_dir}"
+                // Move the build output to the specified directory
+                sh """
+                    cp -r ${component}_text_content ${output_dir}
+                """
+            }
+        }
+    }
+    post {
+        always {
+            echo 'Cleaning up...'
+            // Cleanup actions
+            deleteDir()
+        }
+        success {
+            echo 'Build completed successfully!'
+            description = "The build of component '${params.component}' was successful, and the output has been saved to '${params.output_dir}'."
+        }
+        failure {
+            echo 'Build failed.'
+            description = "The build of component '${params.component}' failed. Please check the logs for more details."
+        }
+    }
+}
