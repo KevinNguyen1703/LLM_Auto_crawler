@@ -10,7 +10,7 @@ pipeline {
                 echo "Cào trang web từ nguồn: ${params.component}"
                 // Simulate the build process (replace with your actual build commands)
                 sh """
-                   python scripts/fetch_${component}.py
+                   python scripts/fetch_${params.component}.py
                 """
             }
         }
@@ -19,7 +19,7 @@ pipeline {
                 echo "Saving output to: ${params.output_dir}"
                 // Move the build output to the specified directory
                 sh """
-                    cp -r ${component}_text_content ${output_dir}
+                    cp -r ${params.component}_text_content ${params.output_dir}
                 """
             }
         }
