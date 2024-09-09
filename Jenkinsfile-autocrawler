@@ -10,7 +10,7 @@ pipeline {
                 echo "Cào trang web từ nguồn: ${params.component}"
                 // Simulate the build process (replace with your actual build commands)
                 sh """
-                   python fetch_${component}.py
+                   python scripts/fetch_${component}.py
                 """
             }
         }
