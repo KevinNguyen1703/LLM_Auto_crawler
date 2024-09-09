@@ -32,11 +32,11 @@ pipeline {
         }
         success {
             echo 'Build completed successfully!'
-            description = "The build of component '${params.component}' was successful, and the output has been saved to '${params.output_dir}'."
+            currentBuid.description="[Success]-[${component}]-[${output_dir}]"
         }
         failure {
             echo 'Build failed.'
-            description = "The build of component '${params.component}' failed. Please check the logs for more details."
+            currentBuid.description="[Failed]-[${component}]-[${output_dir}]"
         }
     }
 }
