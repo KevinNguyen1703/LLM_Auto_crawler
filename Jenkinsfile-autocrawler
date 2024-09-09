@@ -32,11 +32,11 @@ pipeline {
         }
         success {
             echo 'Build completed successfully!'
-            currentBuid.description="[Success]-[${component}]-[${output_dir}]"
+            // currentBuid.description="[Success]-[${component}]-[${output_dir}]"
         }
         failure {
             echo 'Build failed.'
-            currentBuid.description="[Failed]-[${component}]-[${output_dir}]"
+            // currentBuid.description="[Failed]-[${component}]-[${output_dir}]"
         }
     }
 }
