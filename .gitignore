@@ -9,3 +9,4 @@ tuoitre*/
 *.txt
 
 .DS_Store
+.env
