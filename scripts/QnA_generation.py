@@ -1,33 +1,35 @@
 import openai
 import json
 import os
-# Cấu hình khóa API OpenAI
-openai_api_key = os.getenv('OPENAI_API_KEY')
+from dotenv import load_dotenv
+
+load_dotenv()
+openai.api_key = os.getenv('OPENAI_API_KEY')
 
 def generate_questions_answers(text, num_questions=3):
     questions_answers = []
 
     for _ in range(num_questions):
-        # Tạo prompt để sinh câu hỏi
+        # Prompt to generate questions
         messages = [
             {"role": "system", "content": "Bạn là một trợ lý hữu ích."},
             {"role": "user", "content": f"Dựa trên đoạn văn bản sau đây, hãy tạo một câu hỏi liên quan:\n\n{text}\n\nCâu hỏi:"}
         ]
         question_response = openai.ChatCompletion.create(
-            model="gpt-4o-mini",  # Hoặc "gpt-3.5-turbo" nếu bạn sử dụng GPT-3.5
+            model="gpt-4o-mini",  # or "gpt-3.5-turbo"
             messages=messages,
             max_tokens=50,
             temperature=0.2
         )
         question = question_response.choices[0].message['content'].strip()
 
-        # Tạo prompt để sinh câu trả lời
+        # Prompt to generate anwsers
         messages = [
             {"role": "system", "content": "Bạn là một trợ lý hữu ích."},
             {"role": "user", "content": f"Dựa trên đoạn văn bản sau đây, hãy trả lời câu hỏi sau:\n\n{text}\n\nCâu hỏi: {question}\n\nCâu trả lời:"}
         ]
         answer_response = openai.ChatCompletion.create(
-            model="gpt-4o-mini",  # Hoặc "gpt-3.5-turbo" nếu bạn sử dụng GPT-3.5
+            model="gpt-4o-mini",  # or "gpt-3.5-turbo"
             messages=messages,
             max_tokens=300,
             temperature=0.2
@@ -46,11 +48,9 @@ if __name__ == "__main__":
 
     # Loop through all files in the folder
     for filename in os.listdir(folder_path):
-        # Check if the file is a text file
         if filename.endswith('.txt'):
             file_path = os.path.join(folder_path, filename)
             
-            # Read the content of the text file
             with open(file_path, 'r', encoding='utf-8') as file:
                 text = file.read()
             

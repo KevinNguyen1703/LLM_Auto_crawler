@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
 import os
 
-def fetch_recent_articles():
+def fetch_vnexpress_articles():
     url = 'https://vnexpress.net/tin-tuc-24h'
     response = requests.get(url)
     response.raise_for_status()
@@ -58,4 +58,4 @@ def fetch_recent_articles():
                     print(f"Saved text content: {link} at {article_time.strftime('%Y-%m-%d %H:%M:%S')}")
 
 if __name__ == '__main__':
-    fetch_recent_articles()
+    fetch_vnexpress_articles()
