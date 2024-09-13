@@ -23,6 +23,15 @@ pipeline {
                 """
             }
         }
+        stage('Auto embedding') {
+            steps {
+                echo "Store embedding vector into cloud storage"
+                // Move the build output to the specified directory
+                sh """
+                    python scripts/auto_store_embedded_vector.py --folder ${params.output_dir}/${component}_text_content
+                """
+            }
+        }
     }
     post {
         always {
