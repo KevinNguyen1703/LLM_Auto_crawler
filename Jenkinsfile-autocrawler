@@ -5,7 +5,7 @@ pipeline {
         string(name: 'output_dir', defaultValue: '/Users/gumiho/Gumiho/project/crawl-house-price/auto_crawler', description: 'Directory to store the output files')
     }
     stages {
-        stage('Build') {
+        stage("Crawl data from ${component}") {
             steps {
                 echo "Cào trang web từ nguồn: ${params.component}"
                 // Simulate the build process (replace with your actual build commands)
@@ -14,7 +14,7 @@ pipeline {
                 """
             }
         }
-        stage('Save Output') {
+        stage('Extract Output into plain text') {
             steps {
                 echo "Saving output to: ${params.output_dir}"
                 // Move the build output to the specified directory
