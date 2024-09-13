@@ -11,7 +11,7 @@ def init_pinecone_client():
     pinecone = Pinecone(api_key=os.getenv('PINECONE_API_KEY'), environment=os.getenv('ENVIRONMENT_REGION'))
     # Create index (only need to do this once)
     index_name = os.getenv('PINECONE_INDEX_NAME')
-    if index_name not in pinecone.list_indexes():
+    if any(index["name"] == index_name for index in pinecone.list_indexes()):
         pinecone.create_index(
             name=index_name, 
             dimension=1536,
