@@ -50,7 +50,7 @@ def scrape_latest_articles():
                 #     text_content = main_content.get_text(separator='\n', strip=True)
 
                 #     # Lưu văn bản vào một file .txt
-                text_filename = os.path.join('tuoitre_text_content', f"{article_time.replace("/","_")}.txt")
+                text_filename = os.path.join('tuoitre_text_content', f"{article_time.replace('/','_')}.txt")
                 with open(text_filename, 'w', encoding='utf-8') as file:
                     file.write(main_content)
 
