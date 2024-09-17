@@ -28,7 +28,6 @@ pipeline {
                 echo "Store embedding vector into cloud storage"
                 // Move the build output to the specified directory
                 sh """
-                    cp /Users/gumiho/Gumiho/project/crawl-house-price/auto_crawler/.env ../
                     python scripts/auto_store_embedded_vector.py --folder ${params.output_dir}/${component}_text_content
                 """
             }
