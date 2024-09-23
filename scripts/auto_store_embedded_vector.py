@@ -71,7 +71,7 @@ def generate_embeddings(texts, embedded_model="text-embedding-ada-002"):
     return embeddings
 
 # Function to store embeddings in Pinecone
-def store_embeddings(folder_path):
+def store_embeddings(folder_path, vector_db):
     if vector_db == 'pinecone':
         index = init_pinecone_client()
         text_data = read_txt_file(folder_path=folder_path)
