@@ -36,7 +36,7 @@ def init_milvus_client():
     milvus_client = Milvus(host=os.getenv('MILVUS_HOST'), port=os.getenv('MILVUS_PORT'))
     # Define schema for the collection
     fields = [
-        FieldSchema(name="id", dtype=DataType.STRING, is_primary=True),
+        FieldSchema(name="id", dtype=DataType.VARCHAR, max_length=255, is_primary=True),  # Use VARCHAR or INT64
         FieldSchema(name="vector", dtype=DataType.FLOAT_VECTOR, dim=1536)
     ]
     collection_schema = CollectionSchema(fields)
