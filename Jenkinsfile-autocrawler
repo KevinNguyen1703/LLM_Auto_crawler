@@ -2,6 +2,7 @@ pipeline {
     agent any
     parameters {
         choice(name: 'component', choices: ['tuoitre', 'vnexpress'], description: 'Nguồn báo cần crawl')
+        choice(name: 'vectordb', choices: ['milvus', 'pinecone'], description: 'Nguồn báo cần crawl')
         string(name: 'output_dir', defaultValue: '/Users/gumiho/Gumiho/project/crawl-house-price/auto_crawler', description: 'Directory to store the output files')
     }
     stages {
@@ -28,7 +29,7 @@ pipeline {
                 echo "Store embedding vector into cloud storage"
                 // Move the build output to the specified directory
                 sh """
-                    python scripts/auto_store_embedded_vector.py --folder ${params.output_dir}/${component}_text_content
+                    python scripts/auto_store_embedded_vector.py --folder ${params.output_dir}/${component}_text_content --db ${params.vectordb}
                 """
             }
         }

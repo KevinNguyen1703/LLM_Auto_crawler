@@ -4,6 +4,7 @@ import openai
 from openai import AzureOpenAI
 from dotenv import load_dotenv
 import argparse
+from pymilvus import Milvus, FieldSchema, CollectionSchema, DataType
 
 load_dotenv()
 # openai.api_key = os.getenv('OPENAI_API_KEY')
@@ -30,6 +31,21 @@ def init_pinecone_client():
     index = pinecone.Index(index_name)
     
     return index
+
+def init_milvus_client():
+    milvus_client = Milvus(host=os.getenv('MILVUS_HOST'), port=os.getenv('MILVUS_PORT'))
+    # Define schema for the collection
+    fields = [
+        FieldSchema(name="id", dtype=DataType.STRING, is_primary=True),
+        FieldSchema(name="vector", dtype=DataType.FLOAT_VECTOR, dim=1536)
+    ]
+    collection_schema = CollectionSchema(fields)
+    collection_name = os.getenv('MILVUS_COLLECTION_NAME')
+
+    if not milvus_client.has_collection(collection_name):
+        milvus_client.create_collection(collection_name, collection_schema)
+        
+    return milvus_client, collection_name
     
 def read_txt_file(folder_path):
     # Read text files from the folder
@@ -56,18 +72,27 @@ def generate_embeddings(texts, embedded_model="text-embedding-ada-002"):
 
 # Function to store embeddings in Pinecone
 def store_embeddings(folder_path):
-    index = init_pinecone_client()
-    text_data = read_txt_file(folder_path=folder_path)
-    embeddings = generate_embeddings(texts=text_data)
-    for embedding in embeddings:
-        index.upsert([(embedding['id'], embedding['vector'])])
+    if vector_db == 'pinecone':
+        index = init_pinecone_client()
+        text_data = read_txt_file(folder_path=folder_path)
+        embeddings = generate_embeddings(texts=text_data)
+        for embedding in embeddings:
+            index.upsert([(embedding['id'], embedding['vector'])])
+    elif vector_db == 'milvus':
+        milvus_client, collection_name = init_milvus_client()
+        text_data = read_txt_file(folder_path=folder_path)
+        embeddings = generate_embeddings(texts=text_data)
+        ids = [embedding['id'] for embedding in embeddings]
+        vectors = [embedding['vector'] for embedding in embeddings]
+        milvus_client.insert(collection_name, [(ids, vectors)])
 
 if __name__ == "__main__":
     
     parser = argparse.ArgumentParser(description="Script to auto store embedding vector into cloud vectordb")
     parser.add_argument('--folder', type=str, default="/Users/gumiho/Gumiho/project/crawl-house-price/auto_crawler/vnexpress_text_content")  # Required argument
-
+    parser.add_argument('--db', type=str, choices=['pinecone', 'milvus'], default='pinecone')
+    
     args = parser.parse_args()
     
-    store_embeddings(args.folder)
+    store_embeddings(args.folder, vector_db=args.db)
     
