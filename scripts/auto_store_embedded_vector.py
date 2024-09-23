@@ -82,10 +82,18 @@ def store_embeddings(folder_path, vector_db):
         milvus_client, collection_name = init_milvus_client()
         text_data = read_txt_file(folder_path=folder_path)
         embeddings = generate_embeddings(texts=text_data)
+
+        # Prepare data for insertion
         ids = [embedding['id'] for embedding in embeddings]
         vectors = [embedding['vector'] for embedding in embeddings]
+
+        # Ensure the vectors are in the correct format (list of floats)
+        if isinstance(vectors[0], list):
+            vectors = [[float(val) for val in vector] for vector in vectors]
+
+        # Insert into Milvus
         milvus_client.insert(collection_name, [
-            (ids[i], vectors[i]) for i in range(len(ids))
+            {"id": ids[i], "vector": vectors[i]} for i in range(len(ids))
         ])
 
 if __name__ == "__main__":
