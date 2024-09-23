@@ -1,11 +1,17 @@
 from pinecone import Pinecone, ServerlessSpec
 import os
 import openai
+from openai import AzureOpenAI
 from dotenv import load_dotenv
 import argparse
 
 load_dotenv()
-openai.api_key = os.getenv('OPENAI_API_KEY')
+# openai.api_key = os.getenv('OPENAI_API_KEY')
+client = AzureOpenAI(
+    api_key=os.getenv("AZURE_OPENAI_API_KEY"),
+    azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
+    api_version="2024-04-01-preview",
+)
 
 def init_pinecone_client():
     pinecone = Pinecone(api_key=os.getenv('PINECONE_API_KEY'), environment=os.getenv('ENVIRONMENT_REGION'))
@@ -40,9 +46,9 @@ def read_txt_file(folder_path):
 def generate_embeddings(texts, embedded_model="text-embedding-ada-002"):
     embeddings = []
     for item in texts:
-        response = openai.Embedding.create(
-            input=item['text'],
-            model=embedded_model
+        response = client.embeddings.create(
+            model="text3small",
+            input=item['text']
         )
         embedding = response['data'][0]['embedding']
         embeddings.append({"id": item['id'], "vector": embedding})
