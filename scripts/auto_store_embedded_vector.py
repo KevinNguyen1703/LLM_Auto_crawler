@@ -84,7 +84,9 @@ def store_embeddings(folder_path, vector_db):
         embeddings = generate_embeddings(texts=text_data)
         ids = [embedding['id'] for embedding in embeddings]
         vectors = [embedding['vector'] for embedding in embeddings]
-        milvus_client.insert(collection_name, [(ids, vectors)])
+        milvus_client.insert(collection_name, [
+            (ids[i], vectors[i]) for i in range(len(ids))
+        ])
 
 if __name__ == "__main__":
     
