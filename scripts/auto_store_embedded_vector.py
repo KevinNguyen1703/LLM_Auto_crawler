@@ -50,7 +50,7 @@ def generate_embeddings(texts, embedded_model="text-embedding-ada-002"):
             model="text3small",
             input=item['text']
         )
-        embedding = response['data'][0]['embedding']
+        embedding = list(response.data[0])[0][1]
         embeddings.append({"id": item['id'], "vector": embedding})
     return embeddings
 
