@@ -4,7 +4,7 @@ import openai
 from openai import AzureOpenAI
 from dotenv import load_dotenv
 import argparse
-from pymilvus import Milvus, FieldSchema, CollectionSchema, DataType
+from pymilvus import Milvus, FieldSchema, CollectionSchema, DataType, connections
 
 load_dotenv()
 # openai.api_key = os.getenv('OPENAI_API_KEY')
@@ -72,29 +72,29 @@ def generate_embeddings(texts, embedded_model="text-embedding-ada-002"):
 
 # Function to store embeddings in Pinecone
 def store_embeddings(folder_path, vector_db):
+    text_data = read_txt_file(folder_path=folder_path)
+    embeddings = generate_embeddings(texts=text_data)
     if vector_db == 'pinecone':
         index = init_pinecone_client()
-        text_data = read_txt_file(folder_path=folder_path)
-        embeddings = generate_embeddings(texts=text_data)
         for embedding in embeddings:
             index.upsert([(embedding['id'], embedding['vector'])])
     elif vector_db == 'milvus':
         milvus_client, collection_name = init_milvus_client()
-        text_data = read_txt_file(folder_path=folder_path)
-        embeddings = generate_embeddings(texts=text_data)
+        connections.connect("default", host=os.getenv('MILVUS_HOST'), port=os.getenv('MILVUS_HOST'))
+        fields = [
+            FieldSchema(name="id", dtype=DataType.VARCHAR, max_length=255, is_primary=True),
+            FieldSchema(name="embedding", dtype=DataType.FLOAT_VECTOR, dim=1536)
+        ]
+        schema = CollectionSchema(fields, collection_name)
+        collection = Collection(name=collection_name, schema=schema)
+        ids, emds = [], []
+        for embedding in embeddings:
+            ids.append(embedding['id'])
+            emds.append(embedding['vector']) 
+        data = [ids,emds]
+        collection.insert(data)
+        collection.flush()
 
-        # Prepare data for insertion
-        ids = [embedding['id'] for embedding in embeddings]
-        vectors = [embedding['vector'] for embedding in embeddings]
-
-        # Ensure the vectors are in the correct format (list of floats)
-        if isinstance(vectors[0], list):
-            vectors = [[float(val) for val in vector] for vector in vectors]
-
-        # Insert into Milvus
-        milvus_client.insert(collection_name, [
-            {"id": ids[i], "vector": vectors[i]} for i in range(len(ids))
-        ])
 
 if __name__ == "__main__":
     
