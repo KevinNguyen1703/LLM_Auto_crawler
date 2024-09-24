@@ -4,7 +4,7 @@ import openai
 from openai import AzureOpenAI
 from dotenv import load_dotenv
 import argparse
-from pymilvus import Milvus, FieldSchema, CollectionSchema, DataType, connections
+from pymilvus import Milvus, FieldSchema, Collection, CollectionSchema, DataType, connections
 
 load_dotenv()
 # openai.api_key = os.getenv('OPENAI_API_KEY')
