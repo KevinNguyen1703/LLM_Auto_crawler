@@ -86,7 +86,16 @@ def store_embeddings(folder_path, vector_db):
             FieldSchema(name="embedding", dtype=DataType.FLOAT_VECTOR, dim=1536)
         ]
         schema = CollectionSchema(fields, collection_name)
-        collection = Collection(name=collection_name, schema=schema)
+        # Check if the collection already exists
+        if Collection.exists(collection_name):
+            collection = Collection(collection_name)
+            if collection.schema != schema:
+                raise ValueError(f"The existing schema for {collection_name} does not match the provided schema.")
+            print(f"Collection {collection_name} already exists. Schema matches.")
+        else:
+            collection = Collection(name=collection_name, schema=schema)
+            print(f"Collection {collection_name} created successfully.")
+            
         ids, emds = [], []
         for embedding in embeddings:
             ids.append(embedding['id'])
