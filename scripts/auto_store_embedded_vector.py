@@ -80,7 +80,7 @@ def store_embeddings(folder_path, vector_db):
             index.upsert([(embedding['id'], embedding['vector'])])
     elif vector_db == 'milvus':
         milvus_client, collection_name = init_milvus_client()
-        connections.connect("default", host=os.getenv('MILVUS_HOST'), port=os.getenv('MILVUS_HOST'))
+        connections.connect("default", host=os.getenv('MILVUS_HOST'), port=os.getenv('MILVUS_PORT'))
         fields = [
             FieldSchema(name="id", dtype=DataType.VARCHAR, max_length=255, is_primary=True),
             FieldSchema(name="embedding", dtype=DataType.FLOAT_VECTOR, dim=1536)
