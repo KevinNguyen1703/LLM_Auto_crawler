@@ -37,7 +37,8 @@ def init_milvus_client():
     # Define schema for the collection
     fields = [
         FieldSchema(name="id", dtype=DataType.VARCHAR, max_length=255, is_primary=True),  # Use VARCHAR or INT64
-        FieldSchema(name="vector", dtype=DataType.FLOAT_VECTOR, dim=1536)
+        FieldSchema(name="vector", dtype=DataType.FLOAT_VECTOR, dim=1536),
+        FieldSchema(name="plain_text", dtype=DataType.VARCHAR, max_length=1024)
     ]
     collection_schema = CollectionSchema(fields)
     collection_name = os.getenv('MILVUS_COLLECTION_NAME')
@@ -83,7 +84,8 @@ def store_embeddings(folder_path, vector_db):
         connections.connect("default", host=os.getenv('MILVUS_HOST'), port=os.getenv('MILVUS_PORT'))
         fields = [
             FieldSchema(name="id", dtype=DataType.VARCHAR, max_length=255, is_primary=True),
-            FieldSchema(name="embedding", dtype=DataType.FLOAT_VECTOR, dim=1536)
+            FieldSchema(name="embedding", dtype=DataType.FLOAT_VECTOR, dim=1536),
+            FieldSchema(name="plain_text", dtype=DataType.VARCHAR, max_length=1024)
         ]
         # schema = CollectionSchema(fields, collection_name)
         collection = Collection(name=collection_name)
@@ -91,7 +93,8 @@ def store_embeddings(folder_path, vector_db):
         for embedding in embeddings:
             ids.append(embedding['id'])
             emds.append(embedding['vector']) 
-        data = [ids,emds]
+        texts = [item['text'] for item in text_data]
+        data = [ids,emds,texts]
         collection.insert(data)
         collection.flush()
 
