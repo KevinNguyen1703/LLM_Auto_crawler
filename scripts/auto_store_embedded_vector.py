@@ -13,7 +13,7 @@ client = AzureOpenAI(
     azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
     api_version="2024-04-01-preview",
 )
-
+MAX_CONTENT_LENGTH=4096
 def init_pinecone_client():
     pinecone = Pinecone(api_key=os.getenv('PINECONE_API_KEY'), environment=os.getenv('ENVIRONMENT_REGION'))
     # Create index (only need to do this once)
@@ -21,7 +21,7 @@ def init_pinecone_client():
     if not any(index["name"] == index_name for index in pinecone.list_indexes()):
         pinecone.create_index(
             name=index_name, 
-            dimension=1536,
+            dimension=4096,
             metric='euclidean',
             spec=ServerlessSpec(
                 cloud='aws',
@@ -38,7 +38,7 @@ def init_milvus_client():
     fields = [
         FieldSchema(name="id", dtype=DataType.VARCHAR, max_length=255, is_primary=True),  # Use VARCHAR or INT64
         FieldSchema(name="vector", dtype=DataType.FLOAT_VECTOR, dim=1536),
-        FieldSchema(name="plain_text", dtype=DataType.VARCHAR, max_length=1024)
+        FieldSchema(name="plain_text", dtype=DataType.VARCHAR, max_length=MAX_CONTENT_LENGTH)
     ]
     collection_schema = CollectionSchema(fields)
     collection_name = os.getenv('MILVUS_COLLECTION_NAME')
@@ -93,7 +93,7 @@ def store_embeddings(folder_path, vector_db):
         for embedding in embeddings:
             ids.append(embedding['id'])
             emds.append(embedding['vector']) 
-        texts = [item['text'] for item in text_data]
+        texts = [item['text'][:MAX_CONTENT_LENGTH] for item in text_data]
         data = [ids,emds,texts]
         collection.insert(data)
         collection.flush()
