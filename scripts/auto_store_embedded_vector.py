@@ -93,7 +93,14 @@ def store_embeddings(folder_path, vector_db):
         for embedding in embeddings:
             ids.append(embedding['id'])
             emds.append(embedding['vector']) 
-        texts = [item['text'][:MAX_CONTENT_LENGTH] for item in text_data]
+        texts = []
+        for item in text_data:
+            text = item['text']
+            words = text.split()
+            truncated_words = words[:MAX_CONTENT_LENGTH]
+            truncated_content = " ".join(truncated_words)
+            texts.append(truncated_content)
+            
         data = [ids,emds,texts]
         collection.insert(data)
         collection.flush()
