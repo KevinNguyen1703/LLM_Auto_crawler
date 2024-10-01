@@ -13,7 +13,7 @@ client = AzureOpenAI(
     azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
     api_version="2024-04-01-preview",
 )
-MAX_CONTENT_LENGTH=4096
+MAX_CONTENT_LENGTH=4096*4
 def init_pinecone_client():
     pinecone = Pinecone(api_key=os.getenv('PINECONE_API_KEY'), environment=os.getenv('ENVIRONMENT_REGION'))
     # Create index (only need to do this once)
@@ -93,14 +93,14 @@ def store_embeddings(folder_path, vector_db):
         for embedding in embeddings:
             ids.append(embedding['id'])
             emds.append(embedding['vector']) 
-        texts = []
-        for item in text_data:
-            text = item['text']
-            words = text.split()
-            truncated_words = words[:MAX_CONTENT_LENGTH//2]
-            truncated_content = " ".join(truncated_words)
-            texts.append(truncated_content)
-            
+        # texts = []
+        # for item in text_data:
+        #     text = item['text']
+        #     words = text.split()
+        #     truncated_words = words[:MAX_CONTENT_LENGTH//2]
+        #     truncated_content = " ".join(truncated_words)
+        #     texts.append(truncated_content)
+        texts = [item['text'] for item in text_data]
         data = [ids,emds,texts]
         collection.insert(data)
         collection.flush()
