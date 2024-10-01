@@ -97,7 +97,7 @@ def store_embeddings(folder_path, vector_db):
         for item in text_data:
             text = item['text']
             words = text.split()
-            truncated_words = words[:MAX_CONTENT_LENGTH]
+            truncated_words = words[:MAX_CONTENT_LENGTH//2]
             truncated_content = " ".join(truncated_words)
             texts.append(truncated_content)
             
