@@ -1,0 +1,35 @@
+pipeline {
+    agent any
+    parameters {
+        // Choice of text source
+        string(name: 'input_folder', defaultValue: '/path/to/input/folder', description: 'Directory containing the text files')
+        string(name: 'output_file', defaultValue: '/path/to/output/qa_pairs.json', description: 'Path to store the output JSON file')
+    }
+    stages {
+        stage("Process Text Files") {
+            steps {
+                echo "Processing text files from: ${params.input_folder}"
+                sh """
+                   python scripts/generateFAQ.py ${params.input_folder} ${params.output_file}
+                """
+            }
+        }
+        stage('Save Output') {
+            steps {
+                echo "Saving output to: ${params.output_file}"
+            }
+        }
+    }
+    post {
+        always {
+            echo 'Cleaning up...'
+            deleteDir()
+        }
+        success {
+            echo 'Build completed successfully!'
+        }
+        failure {
+            echo 'Build failed.'
+        }
+    }
+}
