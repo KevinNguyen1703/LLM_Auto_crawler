@@ -55,8 +55,11 @@ def process_text_files_in_folder(folder_path):
                     print(f"Cannot generate qa pair due to: {e}")
                     continue
                 print(qa_text)
-                parsed_qa = parse_single_qa_pair(qa_text)  # Parse the QA pair
-                
+                try:
+                    parsed_qa = parse_single_qa_pair(qa_text)  # Parse the QA pair
+                except Exception as e:
+                    print(f"Cannot parse qa pair due to: {e}")
+                    continue
                 if parsed_qa:
                     qa_list.append({
                         "page": file_name,
