@@ -40,6 +40,43 @@ def parse_single_qa_pair(qa_text):
         return {"question": question, "answer": answer}
     return None
 
+def process_json_files_in_folder(folder_path):
+    result_list = []
+    
+    for file_name in os.listdir(folder_path):
+        file_path = os.path.join(folder_path, file_name)
+
+        if os.path.isfile(file_path) and file_name.endswith('.json'):
+            print(f"Processing {file_name}")
+            with open(file_path, 'r', encoding='utf-8') as f:
+                json_data = json.load(f)
+                
+                content = json_data.get("content", "")
+                if content:
+                    try:
+                        qa_text = generate_single_qa_pair(content)
+                    except Exception as e:
+                        print(f"Cannot generate qa pair due to: {e}")
+                        continue
+                    
+                    try:
+                        qa_pair = parse_single_qa_pair(qa_text)
+                    except Exception as e:
+                        print(f"Cannot parse qa pair due to: {e}")
+                        continue
+                                  
+                    if qa_pair:
+                        json_data["question"] = qa_pair["question"]
+                        json_data["answer"] = qa_pair["answer"]
+                        
+                        result_list.append(json_data)
+                    else:
+                        print(f"Skipping {file_name}: No QA pair generated.")
+                else:
+                    print(f"Skipping {file_name}: Content field is empty.")
+    
+    return result_list
+
 def process_text_files_in_folder(folder_path):
     qa_list = []
     
@@ -87,5 +124,5 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # Process files in the input folder and save the results to the output JSON file
-    qa_list = process_text_files_in_folder(args.input_folder)
-    save_to_json(qa_list, args.output_file)
+    json_result_list = process_json_files_in_folder(args.input_folder)
+    save_to_json(json_result_list, args.output_file)
