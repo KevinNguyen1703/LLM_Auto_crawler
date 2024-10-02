@@ -68,7 +68,8 @@ def process_json_files_in_folder(folder_path):
                     if qa_pair:
                         json_data["question"] = qa_pair["question"]
                         json_data["answer"] = qa_pair["answer"]
-                        
+                        print(f"question: {qa_pair["question"]}")
+                        print(f"answer: {qa_pair["answer"]}")
                         result_list.append(json_data)
                     else:
                         print(f"Skipping {file_name}: No QA pair generated.")
